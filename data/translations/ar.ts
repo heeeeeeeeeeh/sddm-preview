@@ -5,14 +5,18 @@
     <name>PictureBox</name>
     <message>
         <source>Press to login</source>
-        <translation type="unfinished"></translation>
+        <translation>اضغط لستجيل الدخول</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
+        <source>%1</source>
+        <translation>%1</translation>
+    </message>
+    <message>
         <source>%1 (Wayland)</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 (Wayland)</translation>
     </message>
 </context>
 <context>
@@ -27,31 +31,31 @@
     </message>
     <message>
         <source>Layout</source>
-        <translation>التّخطيط</translation>
+        <translation>المُخطط</translation>
     </message>
     <message>
         <source>Login</source>
-        <translation>لِج</translation>
+        <translation>تسجيل الدخول</translation>
     </message>
     <message>
         <source>Login failed</source>
-        <translation>فشل الولوج</translation>
+        <translation>فشل تسجيل الدخول</translation>
     </message>
     <message>
         <source>Login succeeded</source>
-        <translation>نجح الولوج</translation>
+        <translation>نجح تسجيل الدخول</translation>
     </message>
     <message>
         <source>Password</source>
-        <translation>كلمة المرور</translation>
+        <translation>كلمة السر</translation>
     </message>
     <message>
         <source>Enter your username and password</source>
-        <translation>أدخل اسم المستخدم وكلمة مروره</translation>
+        <translation>أدخل اسم المستخدم وكلمة السر</translation>
     </message>
     <message>
         <source>Reboot</source>
-        <translation>أعد الإقلاع</translation>
+        <translation>أعادة التشغيل</translation>
     </message>
     <message>
         <source>Session</source>
@@ -59,7 +63,15 @@
     </message>
     <message>
         <source>Shutdown</source>
-        <translation>أطفئ</translation>
+        <translation>أيقاف التشغيل</translation>
+    </message>
+    <message>
+    <source>Suspend</source>
+        <translation>ايقاف</translation>
+    </message>
+    <message>
+        <source>Hibernate</source>
+        <translation>وضع الثبات</translation>
     </message>
     <message>
         <source>Username</source>
@@ -67,7 +79,39 @@
     </message>
     <message>
         <source>Select your user and enter password</source>
-        <translation>اختر مستخدمًا وأدخل كلمة مروره</translation>
+        <translation>اختر مستخدمًا وأدخل كلمة السر</translation>
+    </message>
+    <message>
+        <source>Please enter a password!</source>
+        <translation>برجاء ادخال كلمة السر</translation>
+    </message>
+    <message>
+        <source>Change password</source>
+        <translation>تغيير كلمة السر</translation>
+    </message>
+    <message>
+        <source>Enter your username</source>
+        <translation>ادخل اسم المستخدم الخاص بك</translation>
+    </message>
+    <message>
+        <source>Enter your password</source>
+        <translation>ادخل كلمة السر الخاصة بك</translation>
+    </message>
+    <message>
+        <source>Password:</source>
+        <translation>كلمة السر:</translation>
+    </message>
+    <message>
+        <source>Show password</source>
+        <translation>اظهر كلمة السر</translation>
+    </message>
+    <message>
+        <source>Hide password</source>
+        <translation>اخفِ كلمة السر</translation>
+    </message>
+    <message>
+        <source>Password change aborted because maximum tries reached</source>
+        <translation>لا يمكن تغيير كلمة السر لتخطي اقصي عدد ممكن من المحاولات</translation>
     </message>
 </context>
 </TS>
