@@ -45,12 +45,6 @@ namespace SDDM {
     public:
         explicit GreeterApp(QObject *parent = nullptr);
 
-        bool isTestModeEnabled() const;
-        void setTestModeEnabled(bool value);
-
-        QString socketName() const;
-        void setSocketName(const QString &name);
-
         QString themePath() const;
         void setThemePath(const QString &path);
 
@@ -74,7 +68,6 @@ namespace SDDM {
         ThemeConfig *m_themeConfig { nullptr };
         SessionModel *m_sessionModel { nullptr };
         UserModel *m_userModel { nullptr };
-        GreeterProxy *m_proxy { nullptr };
         KeyboardModel *m_keyboard { nullptr };
 
         void startup();

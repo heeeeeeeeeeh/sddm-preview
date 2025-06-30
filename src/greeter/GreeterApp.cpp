@@ -20,7 +20,6 @@
 
 #include "GreeterApp.h"
 #include "Configuration.h"
-#include "GreeterProxy.h"
 #include "Constants.h"
 #include "ScreenModel.h"
 #include "SessionModel.h"
@@ -65,26 +64,6 @@ namespace SDDM {
         // Create models
         m_sessionModel = new SessionModel();
         m_keyboard = new KeyboardModel();
-    }
-
-    bool GreeterApp::isTestModeEnabled() const
-    {
-        return m_testing;
-    }
-
-    void GreeterApp::setTestModeEnabled(bool value)
-    {
-        m_testing = value;
-    }
-
-    QString GreeterApp::socketName() const
-    {
-        return m_socket;
-    }
-
-    void GreeterApp::setSocketName(const QString &name)
-    {
-        m_socket = name;
     }
 
     QString GreeterApp::themePath() const
@@ -170,7 +149,6 @@ namespace SDDM {
         view->engine()->addImportPath(QStringLiteral(IMPORTS_INSTALL_DIR));
 
         // connect proxy signals
-        connect(m_proxy, &GreeterProxy::loginSucceeded, view, &QQuickView::close);
 
         // we used to have only one window as big as the virtual desktop,
         // QML took care of creating an item for each screen by iterating on
@@ -188,7 +166,6 @@ namespace SDDM {
         view->rootContext()->setContextProperty(QStringLiteral("screenModel"), screenModel);
         view->rootContext()->setContextProperty(QStringLiteral("userModel"), m_userModel);
         view->rootContext()->setContextProperty(QStringLiteral("config"), m_themeConfig);
-        view->rootContext()->setContextProperty(QStringLiteral("sddm"), m_proxy);
         view->rootContext()->setContextProperty(QStringLiteral("keyboard"), m_keyboard);
         view->rootContext()->setContextProperty(QStringLiteral("primaryScreen"), QGuiApplication::primaryScreen() == screen);
         view->rootContext()->setContextProperty(QStringLiteral("__sddm_errors"), QString());
@@ -243,13 +220,6 @@ namespace SDDM {
 
     void GreeterApp::startup()
     {
-        // Connect to the daemon
-        m_proxy = new GreeterProxy(m_socket);
-        if (!m_testing && !m_proxy->isConnected()) {
-            qCritical() << "Cannot connect to the daemon - is it running?";
-            QCoreApplication::exit(EXIT_FAILURE);
-            return;
-        }
 
         // Set numlock upon start
         if (m_keyboard->enabled()) {
@@ -267,12 +237,6 @@ namespace SDDM {
                 QGuiApplication::setFont(font);
             }
         }
-
-        // Set session model on proxy
-        m_proxy->setSessionModel(m_sessionModel);
-
-        // If the socket ends, bail. There is not much we can do.
-        connect(m_proxy, &GreeterProxy::socketDisconnected, qGuiApp, &QCoreApplication::quit);
 
         // Create views
         const QList<QScreen *> screens = qGuiApp->primaryScreen()->virtualSiblings();
@@ -304,7 +268,6 @@ namespace SDDM {
 
 int main(int argc, char **argv)
 {
-    bool testMode = false;
     // We set an attribute based on the platform we run on.
     // We only know the platform after we constructed QGuiApplication
     // though, so we need to find it out ourselves.
@@ -313,7 +276,6 @@ int main(int argc, char **argv)
         if(qstrcmp(argv[i], "-platform") == 0) {
             platform = QString::fromUtf8(argv[i + 1]);
         }
-        testMode |= qstrcmp(argv[i], "--test-mode") == 0;
     }
     if (platform.isEmpty()) {
         platform = QString::fromUtf8(qgetenv("QT_QPA_PLATFORM"));
@@ -323,8 +285,7 @@ int main(int argc, char **argv)
     }
 
     // Install message handler
-    if (!testMode)
-        qInstallMessageHandler(SDDM::GreeterMessageHandler);
+    qInstallMessageHandler(SDDM::GreeterMessageHandler);
 
     // HiDPI
     bool hiDpiEnabled = false;
@@ -374,20 +335,12 @@ int main(int argc, char **argv)
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption testModeOption(QLatin1String("test-mode"), TR("Start greeter in test mode"));
-    parser.addOption(testModeOption);
-
-    QCommandLineOption socketOption(QLatin1String("socket"), TR("Socket name"), TR("name"));
-    parser.addOption(socketOption);
-
     QCommandLineOption themeOption(QLatin1String("theme"), TR("Greeter theme"), TR("path"));
     parser.addOption(themeOption);
 
     parser.process(app);
 
     SDDM::GreeterApp *greeter = new SDDM::GreeterApp();
-    greeter->setTestModeEnabled(parser.isSet(testModeOption));
-    greeter->setSocketName(parser.value(socketOption));
     greeter->setThemePath(parser.value(themeOption));
     QCoreApplication::postEvent(greeter, new SDDM::StartupEvent());
 

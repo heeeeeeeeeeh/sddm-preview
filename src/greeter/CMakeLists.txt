@@ -51,6 +51,5 @@ if(JOURNALD_FOUND)
 endif()
 
 # Translations
-add_dependencies(${GREETER_TARGET} components-translation themes-translation)
 
-install(TARGETS ${GREETER_TARGET} DESTINATION "${CMAKE_INSTALL_BINDIR}")
+install(TARGETS ${GREETER_TARGET} DESTINATION "${CMAKE_SOURCE_DIR}")
