@@ -43,7 +43,6 @@ qt_add_resources(RESOURCES ${CMAKE_CURRENT_BINARY_DIR}/theme.qrc)
 add_executable(${GREETER_TARGET} ${GREETER_SOURCES} ${RESOURCES})
 target_link_libraries(${GREETER_TARGET}
                       Qt${QT_MAJOR_VERSION}::Quick
-                      Qt${QT_MAJOR_VERSION}::OpenGL
                       ${LIBXCB_LIBRARIES}
                       ${LIBXKB_LIBRARIES})
 

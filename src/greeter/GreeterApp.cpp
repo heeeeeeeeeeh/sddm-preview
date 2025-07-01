@@ -44,6 +44,7 @@
 #include <QVersionNumber>
 #include <QSurfaceFormat>
 #include <QOpenGLFramebufferObject>
+#include <qstringliteral.h>
 
 
 #define TR(x) QT_TRANSLATE_NOOP("Command line parser", QStringLiteral(x))
@@ -129,6 +130,10 @@ namespace SDDM {
       }
       QString themeName = m_themePath.split(QStringLiteral("/")).back();
       m_screenshotPath.append(themeName + QStringLiteral(".png"));
+      QFile file(m_screenshotPath);
+      if (file.exists()){
+          exit(0);
+      }
     }
 
     void GreeterApp::customEvent(QEvent *event)
