@@ -44,7 +44,6 @@
 #include <QVersionNumber>
 #include <QSurfaceFormat>
 #include <QOpenGLFramebufferObject>
-#include <cstdlib>
 
 
 #define TR(x) QT_TRANSLATE_NOOP("Command line parser", QStringLiteral(x))
@@ -215,7 +214,7 @@ namespace SDDM {
           if (status != QQuickView::Ready) {
             return; 
           }
-          QTimer::singleShot(100, [view, this]() {
+          QTimer::singleShot(10, [view, this]() {
               screenshot(view);
               qGuiApp->quit();
           });
