@@ -43,8 +43,9 @@
 #include <QLibraryInfo>
 #include <QVersionNumber>
 #include <QSurfaceFormat>
+#include <QOpenGLFramebufferObject>
+#include <cstdlib>
 
-#include <iostream>
 
 #define TR(x) QT_TRANSLATE_NOOP("Command line parser", QStringLiteral(x))
 
@@ -114,6 +115,21 @@ namespace SDDM {
         if (m_theme_translator->load(QLocale::system(), QString(), QString(),
                            QStringLiteral("%1/%2/").arg(m_themePath, m_metadata->translationsDirectory())))
             QCoreApplication::installTranslator(m_theme_translator);
+    }
+
+    QString GreeterApp::screeshotPath() const{
+    return m_screenshotPath;
+
+    }
+ 
+    void GreeterApp::setScreeshotPath (const QString &path){
+      m_screenshotPath = path;
+      if (path.isEmpty()) {
+        m_screenshotPath = QString::fromUtf8(qgetenv("HOME"));
+        m_screenshotPath.append(QStringLiteral("/.cache/hyde/sddm-preview/"));
+      }
+      QString themeName = m_themePath.split(QStringLiteral("/")).back();
+      m_screenshotPath.append(themeName + QStringLiteral(".png"));
     }
 
     void GreeterApp::customEvent(QEvent *event)
@@ -195,6 +211,15 @@ namespace SDDM {
             view->setSource(QUrl(QStringLiteral("qrc:/theme/Main.qml")));
         });
 
+        connect(view,&QQuickView::statusChanged,this,[view, this](QQuickView::Status status) {
+          if (status != QQuickView::Ready) {
+            return; 
+          }
+          QTimer::singleShot(100, [view, this]() {
+              screenshot(view);
+              qGuiApp->quit();
+          });
+        });
         // set main script as source
         qInfo("Loading %s...", qPrintable(mainScriptUrl.toString()));
         view->setSource(mainScriptUrl);
@@ -218,6 +243,16 @@ namespace SDDM {
         view->deleteLater();
     }
 
+    void GreeterApp::screenshot(QScreen *screen){
+      QPixmap pix = screen->grabWindow(0);
+      pix.save(m_screenshotPath);
+    }
+
+    void GreeterApp::screenshot(QQuickView *view){
+      QImage img = view->grabWindow();
+      img.save(m_screenshotPath);
+    }
+
     void GreeterApp::startup()
     {
 
@@ -239,15 +274,9 @@ namespace SDDM {
         }
 
         // Create views
-        const QList<QScreen *> screens = qGuiApp->primaryScreen()->virtualSiblings();
-        for (QScreen *screen : screens)
-            addViewForScreen(screen);
-
+        QScreen* screen = QGuiApplication::primaryScreen();
+        addViewForScreen(screen);
         // Handle screens
-        connect(qGuiApp, &QGuiApplication::screenAdded, this, &GreeterApp::addViewForScreen);
-        connect(qGuiApp, &QGuiApplication::primaryScreenChanged, this, [this](QScreen *) {
-            activatePrimary();
-        });
     }
 
     void GreeterApp::activatePrimary() {
@@ -337,11 +366,14 @@ int main(int argc, char **argv)
 
     QCommandLineOption themeOption(QLatin1String("theme"), TR("Greeter theme"), TR("path"));
     parser.addOption(themeOption);
+    QCommandLineOption screenshotPath = QCommandLineOption(QLatin1String("screenshotPath"), TR("Screenshots saved to this path"), TR("path"));
+    parser.addOption(screenshotPath);
 
     parser.process(app);
 
     SDDM::GreeterApp *greeter = new SDDM::GreeterApp();
     greeter->setThemePath(parser.value(themeOption));
+    greeter->setScreeshotPath(parser.value(screenshotPath));
     QCoreApplication::postEvent(greeter, new SDDM::StartupEvent());
 
     return app.exec();

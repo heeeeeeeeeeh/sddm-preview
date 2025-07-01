@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QScreen>
 #include <QQuickView>
+#include <QOpenGLFramebufferObject>
+#include <QScopedPointer>
 
 class QTranslator;
 
@@ -47,6 +49,11 @@ namespace SDDM {
 
         QString themePath() const;
         void setThemePath(const QString &path);
+        QString screeshotPath() const;
+        void setScreeshotPath (const QString &path);
+        void screenshot();
+        void screenshot(QQuickView *view);
+        void screenshot(QScreen *screen);
 
     protected:
         void customEvent(QEvent *event) override;
@@ -56,9 +63,11 @@ namespace SDDM {
         void removeViewForScreen(QQuickView *view);
 
     private:
+        QScopedPointer<QOpenGLFramebufferObject> m_fbo;
         bool m_testing = false;
         QString m_socket;
         QString m_themePath;
+        QString m_screenshotPath;
 
         QList<QQuickView *> m_views;
         QTranslator *m_theme_translator { nullptr },
